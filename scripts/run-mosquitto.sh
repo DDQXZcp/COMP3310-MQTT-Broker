@@ -43,26 +43,32 @@ EOF
 
 echo "Creating/updating Mosquitto password file..."
 
+sudo rm -f "$APP_DIR/mosquitto/config/passwords"
+
 sudo docker run --rm \
+  --user root \
   -v "$APP_DIR/mosquitto/config:/mosquitto/config" \
   eclipse-mosquitto:2 \
   mosquitto_passwd -b -c /mosquitto/config/passwords "$MQTT_USERNAME" "$MQTT_PASSWORD"
 
-echo "Granting Mosquitto permissions"
+echo "Fixing Mosquitto permissions..."
 
 sudo chown -R 1883:1883 "$APP_DIR/mosquitto/data"
 sudo chown -R 1883:1883 "$APP_DIR/mosquitto/log"
+
 sudo chmod 644 "$APP_DIR/mosquitto/config/mosquitto.conf"
-sudo chmod 640 "$APP_DIR/mosquitto/config/passwords"
+sudo chmod 644 "$APP_DIR/mosquitto/config/passwords"
 
 echo "Starting Mosquitto..."
 
 cd "$APP_DIR"
 
 sudo docker compose pull
-sudo docker compose down
+sudo docker compose down || true
 sudo docker compose up -d
 
-echo "Mosquitto is running."
-
+echo "Mosquitto status:"
 sudo docker ps
+
+echo "Mosquitto logs:"
+sudo docker logs mosquitto --tail 50
