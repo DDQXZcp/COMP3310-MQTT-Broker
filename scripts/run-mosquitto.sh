@@ -48,6 +48,13 @@ sudo docker run --rm \
   eclipse-mosquitto:2 \
   mosquitto_passwd -b -c /mosquitto/config/passwords "$MQTT_USERNAME" "$MQTT_PASSWORD"
 
+echo "Granting Mosquitto permissions"
+
+sudo chown -R 1883:1883 "$APP_DIR/mosquitto/data"
+sudo chown -R 1883:1883 "$APP_DIR/mosquitto/log"
+sudo chmod 644 "$APP_DIR/mosquitto/config/mosquitto.conf"
+sudo chmod 640 "$APP_DIR/mosquitto/config/passwords"
+
 echo "Starting Mosquitto..."
 
 cd "$APP_DIR"
