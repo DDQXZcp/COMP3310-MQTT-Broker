@@ -1,0 +1,39 @@
+name: Deploy MQTT Broker
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/**"
+      - ".github/workflows/deploy.yml"
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+          ssh-keyscan -H 52.63.194.183 >> ~/.ssh/known_hosts
+
+      - name: Copy run script to EC2
+        run: |
+          scp -i ~/.ssh/ec2_key \
+            scripts/run-mosquitto.sh \
+            ubuntu@52.63.194.183:/tmp/run-mosquitto.sh
+
+      - name: Run Mosquitto on EC2
+        run: |
+          ssh -i ~/.ssh/ec2_key ubuntu@52.63.194.183 << 'EOF'
+            chmod +x /tmp/run-mosquitto.sh
+            /tmp/run-mosquitto.sh
+          EOF
