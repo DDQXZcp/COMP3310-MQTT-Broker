@@ -76,10 +76,18 @@ Try to connect to the broker by specifying
 
 ## Connect to the broker using pytho script
 
-# Step 1 - Create a virtual environment
+### Step 1 - Create a virtual environment
 
 ```
 python3 -m venv mqtt_env
 source mqtt_env/bin/activate
 pip install paho-mqtt
 ```
+
+### Step 2 - Run the test python script
+
+```
+python publisher.py
+```
+
+### Step 3 - Monitor the result in MQTT-Explorer
