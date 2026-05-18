@@ -107,6 +107,7 @@ You may need to grant docker permission to access API.
 sudo usermod -aG docker ubuntu
 newgrp docker
 ```
+If you see anything wrong such as docker not running or docker permission error, it might be because the script is still running. Log out, Wait for a while and log back in again.
 
 ### Step 3 - Upload EC2 SSH Key to Github Secret
 
