@@ -27,7 +27,10 @@ Go to VPC Page, and create a VPC with one Public Subnet. Public subnet means it 
 
 **Step 2.3** - Configure Security Group
 
-Security group is like a stateful firewall (two-way), which allows inbound connection from specific IP address range and Port range. Two-way means if it allows the inbound traffic, it also allow the outbound traffic.
+Security group is like a stateful firewall (two-way), which allows inbound connection from specific IP address range and Port range. Two-way means if it allows the inbound traffic, it also allow the outbound traffic. You may wish to allow:
+
+- 22 from 0.0.0.0/0 
+- 1883 from 0.0.0.0/0
 
 **Step 2.4** - Put this into user data script (At the very bottom)
 ```
