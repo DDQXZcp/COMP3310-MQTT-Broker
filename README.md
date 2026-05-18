@@ -4,7 +4,7 @@
 
 ### Step 1 - Create a VPC with a Public Subnet
 
-Go to VPC Page, and create a VPC with one Public Subnet.
+Go to VPC Page, and create a VPC with one Public Subnet. Public subnet means it is connected to an internet gateway that provide routes to the internet.
 
 - Number of AZ = 1
 - Number of Public Subnet = 1
@@ -14,18 +14,18 @@ Go to VPC Page, and create a VPC with one Public Subnet.
 
 ### Step 2 - Prepare an EC2 Instance
 
-**Step 2.1 - Launch an EC2 instance 
+**Step 2.1** - Launch an EC2 instance 
 
 - OS: Ubuntu 24.04 LTS
 - Architecture: ARM
 - Instance Type: t3.micro
 - Disk: 20GB
 
-You may also need to
+**Step 2.2** - You may also need to
 - place the instance in a public subnet
 - Create/use an SSH Key to access your instance.
 
-Put this into user data script
+**Step 2.3** - Put this into user data script (At the very bottom)
 ```
 #!/bin/bash
 # Update the package repository
