@@ -21,11 +21,15 @@ Go to VPC Page, and create a VPC with one Public Subnet. Public subnet means it 
 - Instance Type: t3.micro
 - Disk: 20GB
 
-**Step 2.2** - You may also need to
+**Step 2.2** - Configure Subnet Placement
 - place the instance in a public subnet
 - Create/use an SSH Key to access your instance.
 
-**Step 2.3** - Put this into user data script (At the very bottom)
+**Step 2.3** - Configure Security Group
+
+Security group is like a stateful firewall (two-way), which allows inbound connection from specific IP address range and Port range. Two-way means if it allows the inbound traffic, it also allow the outbound traffic.
+
+**Step 2.4** - Put this into user data script (At the very bottom)
 ```
 #!/bin/bash
 # Update the package repository
@@ -99,7 +103,7 @@ docker ps
 ```
 If you see anything wrong such as docker not running or docker permission error, it might be because the script is still running. Log out, Wait for a while and log back in again.
 
-**Step 2.4** - Connect to your broker
+**Step 2.5** - Connect to your broker
 
 If the broker is already running. Simply set the host as your EC2 instance's public IP and connect.
 
