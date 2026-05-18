@@ -1,23 +1,106 @@
 ﻿# COMP3310-MQTT-Broker
 
-## Step-by-step Guide to Host MQTT Broker in AWS
+## Quick Guide to Spin Up MQTT Broker in AWS
 
-### Step 1 - Prepare an EC2 Instance
+### Step 1 - Create a VPC with a Public Subnet
 
-Launch an EC2 instance 
+Go to VPC Page, and create a VPC with one Public Subnet.
+
+- Number of AZ = 1
+- Number of Public Subnet = 1
+- IPv6 (No need)
+- Private Subnet (No need) 
+- NAT Gateway (No need)
+
+### Step 2 - Prepare an EC2 Instance
+
+**Step 2.1 - Launch an EC2 instance 
 
 - OS: Ubuntu 24.04 LTS
 - Architecture: ARM
-- Instance Type: t4g.small
+- Instance Type: t3.micro
 - Disk: 20GB
 
 You may also need to
 - place the instance in a public subnet
-- Create/use an SSH Key to access your instance via GitHub CI/CD. (Refer to Step 3)
+- Create/use an SSH Key to access your instance.
+
+Put this into user data script
+```
+#!/bin/bash
+# Update the package repository
+sudo apt-get update -y
+
+# Install necessary packages for Docker
+sudo apt-get install -y ca-certificates curl
+
+# Add Docker's official GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the Docker repository to Apt sources
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+# Update the package repository again
+sudo apt-get update -y
+
+# Install Docker packages
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Start and enable Docker service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Add the ubuntu user to the docker group to allow non-root usage
+sudo usermod -aG docker ubuntu
+
+# Restart the Docker service to apply group changes
+sudo systemctl restart docker
+
+# Pull the Mosquitto Docker image
+sudo docker pull eclipse-mosquitto:latest
+
+# Create a Mosquitto configuration directory
+sudo mkdir -p /mosquitto/config /mosquitto/data /mosquitto/log
+
+# Create a default Mosquitto configuration file
+cat <<EOF | sudo tee /mosquitto/config/mosquitto.conf
+# Default Mosquitto configuration
+persistence true
+persistence_location /mosquitto/data/
+log_dest file /mosquitto/log/mosquitto.log
+EOF
+
+# Run the Mosquitto container
+sudo docker run -d --name mosquitto \
+  -p 1883:1883 -p 9001:9001 \
+  -v /mosquitto/config:/mosquitto/config \
+  -v /mosquitto/data:/mosquitto/data \
+  -v /mosquitto/log:/mosquitto/log \
+  eclipse-mosquitto:latest
+
+# Ensure the Docker container restarts automatically on reboot
+sudo docker update --restart always mosquitto
+```
+
+Now you should be able to check if the mosquitto broker is running by
+```
+docker ps
+```
+
+## Advanced Configuration (Optional)
 
 ### Step 2 - Install Docker in EC2 Instance
 
-Install docker in EC2 instance following the official guide. [Docker Installation in Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+If anything failed in previous steps or you wish to install docker manually. Please follow the official installation guide. [Docker Installation in Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 
 You may need to grant docker permission to access API.
 ```
@@ -41,7 +124,7 @@ The content is in this format, make sure you copy everything.
 
 ### Step 4 - Deploy Mosquitto Broker in EC2 Instance
 
-You may need to update deploy.yml with your own settings.
+You may need to update deploy.yml with your own settings. The code also specify the username and password.
 
 ```
 env:
