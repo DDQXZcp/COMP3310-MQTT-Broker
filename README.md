@@ -99,6 +99,10 @@ docker ps
 ```
 If you see anything wrong such as docker not running or docker permission error, it might be because the script is still running. Log out, Wait for a while and log back in again.
 
+**Step 2.4** - Connect to your broker
+
+If the broker is already running. Simply set the host as your EC2 instance's public IP and connect.
+
 ## Advanced Configuration (Optional)
 
 ### Step 2 - Install Docker in EC2 Instance
