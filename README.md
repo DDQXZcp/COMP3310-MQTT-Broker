@@ -71,12 +71,14 @@ sudo docker pull eclipse-mosquitto:latest
 # Create a Mosquitto configuration directory
 sudo mkdir -p /mosquitto/config /mosquitto/data /mosquitto/log
 
-# Create a default Mosquitto configuration file
+# Create a default Mosquitto configuration file with anonymous access allowed
 cat <<EOF | sudo tee /mosquitto/config/mosquitto.conf
 # Default Mosquitto configuration
 persistence true
 persistence_location /mosquitto/data/
 log_dest file /mosquitto/log/mosquitto.log
+listener 1883
+allow_anonymous true
 EOF
 
 # Run the Mosquitto container
